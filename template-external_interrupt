@@ -1,0 +1,40 @@
+#include <avr/io.h>
+#include <stdlib.h>
+#include <string.h>
+#include <util/delay.h>
+
+#ifndef _BV
+#define _BV(bit)        (1<<(bit))
+#endif
+#ifndef sbi
+#define sbi(reg,bit)    reg |= (_BV(bit))
+#endif
+ 
+#ifndef cbi
+#define cbi(reg,bit)    reg &= ~(_BV(bit))
+#endif
+
+#ifndef tbi
+#define tbi(reg,bit)    reg ^= (_BV(bit))
+#endif
+
+void contactron_interrupt_init(){
+// +--------+--------+-----------------------------------------------+
+// | ISC01  | ISC00  | Opis                                          |
+// +--------+--------+-----------------------------------------------+
+// |   0    |   0    | Przerwanie generowane przy stanie niskim INT0 |
+// |   0    |   1    | Przerwanie przy każdej zmianie logicznej INT0 |
+// |   1    |   0    | Przerwanie przy zboczu opadającym INT0        |
+// |   1    |   1    | Przerwanie przy zboczu narastającym INT0      |
+// +--------+--------+-----------------------------------------------+
+  cbi(EICRA,ISC01);
+  cbi(EICRA,ISC00);
+
+  //enable external interrupt (INT0) or INT1
+  sbi(EIMSK, INT0);
+
+  sei();
+}
+
+ISR(INT0_vect) {
+}
