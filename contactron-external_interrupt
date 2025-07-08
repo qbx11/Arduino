@@ -48,10 +48,6 @@ void contactron_interrupt_init(){
 
 int main() {
   contactron_interrupt_init();
-
-  // if(bit_is_clear(CON_PIN, CON_BIT)){
-
-  // }
   //led1
   sbi(LED1_DDR, LED1_BIT);
   cbi(LED1_PORT, LED1_BIT);
