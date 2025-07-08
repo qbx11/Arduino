@@ -1,0 +1,79 @@
+#include <avr/io.h>
+#include <stdlib.h>
+#include <string.h>
+#include <util/delay.h>
+ 
+//led1 controlled by contactron, lights up when contactron closes 
+#define LED1_BIT 0 //PB0
+#define LED1_PORT PORTB
+#define LED1_DDR DDRB
+
+//contracton PD2 (INT0); external interrupts are available on PD2 (INT0) and PD3 (INT1)
+#define CON_BIT 2 //PD2
+#define CON_PIN PIND
+#define CON_DDR DDRD
+#define CON_PORT  PORTD
+
+//led2
+#define LED2_BIT 1 //PB1
+#define LED2_PORT PORTB
+#define LED2_DDR DDRB
+
+
+#ifndef _BV
+#define _BV(bit)        (1<<(bit))
+#endif
+#ifndef sbi
+#define sbi(reg,bit)    reg |= (_BV(bit))
+#endif
+ 
+#ifndef cbi
+#define cbi(reg,bit)    reg &= ~(_BV(bit))
+#endif
+
+#ifndef tbi
+#define tbi(reg,bit)    reg ^= (_BV(bit))
+#endif
+
+void contactron_interrupt_init(){
+  //Any logical change on INT0 generates an interrupt request
+  cbi(EICRA,ISC01);
+  sbi(EICRA,ISC00);
+
+  //External pin interrupt is enabled (INT0)
+  sbi(EIMSK, INT0);
+
+  sei();
+}
+
+int main() {
+  contactron_interrupt_init();
+
+  // if(bit_is_clear(CON_PIN, CON_BIT)){
+
+  // }
+  //led1
+  sbi(LED1_DDR, LED1_BIT);
+  cbi(LED1_PORT, LED1_BIT);
+  //led2
+  sbi(LED2_DDR, LED2_BIT);
+
+  //contactron (pull-up)
+  cbi(CON_DDR, CON_BIT);
+  sbi(CON_PORT, CON_BIT);
+
+	while(1){
+    tbi(LED2_PORT, LED2_BIT);
+    _delay_ms(1000);
+  }
+}
+
+ISR(INT0_vect) {
+    if (bit_is_clear(CON_PIN, CON_BIT)) {
+      
+        sbi(LED1_PORT, LED1_BIT); 
+    } else {
+        
+        cbi(LED1_PORT, LED1_BIT); 
+    }
+}
