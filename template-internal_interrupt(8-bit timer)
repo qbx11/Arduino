@@ -54,15 +54,15 @@ int main() {
 }
 
 ISR(TIMER0_OVF_vect) {
-    //code executed afetr Timer0 overflow
+    //code executed after Timer0 overflow
     tbi(LED_PORT, LED_BIT);   
 }
 
 ISR(TIMER0_COMPA_vect) {
-    // kod wykonywany po dopasowaniu do OCR0A
+    // code executed after match with OCR0A
 }
 
 ISR(TIMER0_COMPB_vect) {
-    // kod wykonywany po dopasowaniu do OCR0B
+    // code executed after match with OCR0B
 }
 
