@@ -1,6 +1,7 @@
 # Arduino
 Przerwania timerów w mikrokontrolerze ATmega328P
 ![obraz](https://github.com/user-attachments/assets/bdbaa695-b105-4974-a53d-a3e7b6109393)
+![obraz](https://github.com/user-attachments/assets/e7f3b9a2-e8de-42c7-a6c2-6525d2c42cb7)
 
 
 Mikrokontroler ATmega328P posiada trzy wewnętrzne timery/countery: Timer0 (8-bitowy), Timer1 (16-bitowy) oraz Timer2 (8-bitowy). Każdy timer może generować przerwania w kilku trybach: po przepełnieniu licznika (Overflow), po dopasowaniu wartości licznika do rejestru porównawczego (Compare Match A/B) oraz (w przypadku Timer1) po zarejestrowaniu zewnętrznego sygnału w kanale Input Capture. Timery mają niezależne preskalery i rejestry porównawcze, co pozwala na elastyczne generowanie przerwań o różnej częstotliwości. Poniżej omówiono każdy timer osobno.
