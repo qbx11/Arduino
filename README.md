@@ -1,6 +1,7 @@
 # Arduino
 Przerwania timerów w mikrokontrolerze ATmega328P
 ![obraz](https://github.com/user-attachments/assets/bdbaa695-b105-4974-a53d-a3e7b6109393)
+8-bit timer:
 ![obraz](https://github.com/user-attachments/assets/e7f3b9a2-e8de-42c7-a6c2-6525d2c42cb7)
 
 
