@@ -1,0 +1,54 @@
+#include <avr/io.h>
+#include <stdlib.h>
+#include <string.h>
+#include <util/delay.h>
+ 
+#define LED_BIT 0 //PB0
+#define LED_PORT PORTB
+#define LED_DDR DDRB
+
+#ifndef _BV
+#define _BV(bit)        (1<<(bit))
+#endif
+#ifndef sbi
+#define sbi(reg,bit)    reg |= (_BV(bit))
+#endif
+ 
+#ifndef cbi
+#define cbi(reg,bit)    reg &= ~(_BV(bit))
+#endif
+
+#ifndef tbi
+#define tbi(reg,bit)    reg ^= (_BV(bit))
+#endif
+
+void internal_interrupt_init(){
+  TCCR0A = 0x00;//normal mode (interrupt after overflow)
+  sbi(TCCR0B,CS02);sbi(TCCR0B,CS00); //preskaler (1024)
+  // TCCR0B = (1<<CS02)|(1<<CS00); 
+
+  sbi(TIMSK0,TOIE0);//timer overflow interrupt enabled.
+
+  sei();//global interrupt enabled
+}
+
+
+int main() {
+  internal_interrupt_init();
+  //LED
+  sbi(LED_DDR, LED_BIT);
+
+  
+
+	while(1){
+    _delay_ms(1000);
+  }
+}
+
+ISR(TIMER0_OVF_vect) {
+    //code executed afetr Timer0 overflow
+    tbi(LED_PORT, LED_BIT);
+    
+}
+
+
