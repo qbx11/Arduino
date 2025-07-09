@@ -27,8 +27,16 @@ void internal_interrupt_init(){
   sbi(TCCR0B,CS02);sbi(TCCR0B,CS00); //preskaler (1024)
   // TCCR0B = (1<<CS02)|(1<<CS00); 
 
-  sbi(TIMSK0,TOIE0);//timer overflow interrupt enabled.
+  sbi(TIMSK0,TOIE0);//timer overflow interrupt enabled
 
+  //-----------------------------------------------------//
+
+  OCR0A = 255;//Output Compare Register A
+  OCR0B = 125;//Output Compare Register B
+
+  sbi(TIMSK0,OCIE0A); //Timer Output Compare Match A Interrupt Enable
+  sbi(TIMSK0,OCIE0B); //Timer Output Compare Match B Interrupt Enable
+  
   sei();//global interrupt enabled
 }
 
@@ -47,8 +55,14 @@ int main() {
 
 ISR(TIMER0_OVF_vect) {
     //code executed afetr Timer0 overflow
-    tbi(LED_PORT, LED_BIT);
-    
+    tbi(LED_PORT, LED_BIT);   
 }
 
+ISR(TIMER0_COMPA_vect) {
+    // kod wykonywany po dopasowaniu do OCR0A
+}
+
+ISR(TIMER0_COMPB_vect) {
+    // kod wykonywany po dopasowaniu do OCR0B
+}
 
