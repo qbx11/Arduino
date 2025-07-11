@@ -1,3 +1,4 @@
+//LM35
 #include <avr/io.h>
 #include <stdlib.h>
 #include <string.h>
