@@ -31,9 +31,38 @@ void UART_init(){
 
 }
 
+void flush_UART_RX() {
+    while (bit_is_set(UCSR0A, RXC0)) {
+        volatile char dummy = UDR0;
+    }
+}
+
 char uart_getchar(){
   while(bit_is_clear(UCSR0A,RXC0)){}
   return UDR0;
+}
+
+uint8_t bufsize = 32;
+void uart_get_string(char *buf, uint8_t bufsize) {
+    flush_UART_RX();
+    uint8_t i = 0;
+    char c;
+
+    while (1) {
+        c = uart_getchar();
+
+        // Obsługa końca linii (Enter = \r lub \n)
+        if (c == '\r' || c == '\n') {
+            break;
+        }
+
+        // Tylko jeśli nie przekroczono rozmiaru bufora
+        if (i < bufsize - 1) {
+            buf[i++] = c;
+        }
+    }
+
+    buf[i] = '\0';  // Zakończ string znakiem null
 }
 
 void uart_char(char c){
@@ -52,6 +81,7 @@ void uart_string(const char* str) {
 
 int main() {
   UART_init();
+  char buffer[bufsize];
 
   while(1){
       
@@ -63,6 +93,12 @@ int main() {
 
       uart_string("\r\nPodales: ");
       uart_char(c);
+      _delay_ms(2000);
+
+      uart_string("\r\nPodaj tekst: ");
+      uart_get_string(buffer,bufsize);
+      uart_string("\r\nOdebrano: ");
+      uart_string(buffer);
       _delay_ms(2000);
   
   }
