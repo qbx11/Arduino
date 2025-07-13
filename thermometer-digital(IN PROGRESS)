@@ -1,0 +1,83 @@
+#include <avr/io.h>
+#include <stdlib.h>
+#include <string.h>
+#include <util/delay.h>
+//Additional libraries
+#include <OneWire.h>
+#include <DallasTemperature.h>
+ 
+#ifndef _BV
+#define _BV(bit)        (1<<(bit))
+#endif
+#ifndef sbi
+#define sbi(reg,bit)    reg |= (_BV(bit))
+#endif
+ 
+#ifndef cbi
+#define cbi(reg,bit)    reg &= ~(_BV(bit))
+#endif
+
+#ifndef tbi
+#define tbi(reg,bit)    reg ^= (_BV(bit))
+#endif
+
+
+// Data wire is plugged into port 2 on the Arduino
+#define ONE_WIRE_BUS 8 //D8(Arduino) == PB0 (ATmega328P)
+
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Pass our oneWire reference to Dallas Temperature.
+DallasTemperature sensors(&oneWire);
+
+//-------------------------------------------
+
+void UART_init(){
+    uint16_t ubrr = 51; //USART Baud Rate Register (holds baud rate value) 51 -> 19200
+    UBRR0H = 0; //UBRR is divided between two registers
+    UBRR0L = 51;
+
+    sbi(UCSR0C,UCSZ01);sbi(UCSR0C,UCSZ00); //8 bit data
+
+    sbi(UCSR0B,TXEN0);//transmiterr enable 
+
+}
+
+void uart_char(char c){
+  while(bit_is_clear(UCSR0A, UDRE0)){}//if buffer is empty
+  UDR0 =c; //buffer equals c
+  
+}
+
+void uart_string(const char* str) {
+    while (*str) {
+        uart_char(*str++);
+    }
+}
+
+//-------------------------------------------
+
+int main() {
+  char buffer[10];
+  sensors.begin();
+  UART_init();
+  
+	while(1){
+    sensors.requestTemperatures(); // Send the command to get temperatures
+    _delay_ms(1500);
+    float tempC = sensors.getTempCByIndex(0);// 0 - index of external device
+
+     // Check if reading was successful
+    if (tempC != DEVICE_DISCONNECTED_C)
+    {
+      uart_string("Temperature for the device 1 (index 0) is: ");
+      dtostrf(tempC, 4, 2, buffer);
+      uart_string(buffer);
+    }
+    else
+    {
+      uart_string("Error: Could not read temperature data");
+    }
+  }
+}
